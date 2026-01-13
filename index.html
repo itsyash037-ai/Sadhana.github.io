@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sadhana Portal</title>
+<style>
+  /* --- THEME VARIABLES --- */
+  :root {
+    --bg-color: #FFF3E0;
+    --container-bg: #ffffff;
+    --text-main: #333333;
+    --text-label: #555555;
+    --input-bg: #fafafa;
+    --input-border: #ddd;
+    --primary: #FF9800;
+    --primary-dark: #E65100;
+    --toggle-bg: #f8f9fa;
+    --shadow: rgba(0,0,0,0.1);
+  }
+
+  /* DARK MODE OVERRIDES */
+  body.dark-mode {
+    --bg-color: #121212;
+    --container-bg: #1e1e1e;
+    --text-main: #e0e0e0;
+    --text-label: #aaaaaa;
+    --input-bg: #2d2d2d;
+    --input-border: #444;
+    --primary: #FFB74D;
+    --primary-dark: #FFA726;
+    --toggle-bg: #2d2d2d;
+    --shadow: rgba(0,0,0,0.5);
+  }
+
+  body { font-family: -apple-system, sans-serif; background: var(--bg-color); padding: 20px; display: flex; justify-content: center; transition: background 0.3s; }
+  .container { background: var(--container-bg); width: 100%; max-width: 400px; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px var(--shadow); border-top: 5px solid var(--primary); transition: background 0.3s; position: relative; }
+  
+  /* --- ANIMATIONS & LOADING --- */
+  button:active { transform: scale(0.96); transition: 0.1s; }
+  
+  .loader {
+    border: 4px solid var(--input-border);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+    display: none;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+  /* --- LAYOUTS --- */
+  .hidden { display: none; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .section-title { font-size: 11px; text-transform: uppercase; color: var(--text-label); letter-spacing: 1px; margin-top: 25px; border-bottom: 1px solid var(--input-border); padding-bottom: 5px; opacity: 0.7; }
+  
+  /* --- INPUTS --- */
+  label { display: block; margin: 12px 0 5px; font-weight: 600; color: var(--text-label); font-size: 13px; }
+  input, select, textarea { 
+      width: 100%; padding: 12px; border: 1px solid var(--input-border); border-radius: 8px; box-sizing: border-box; font-size: 16px; 
+      background: var(--input-bg); color: var(--text-main); transition: 0.3s;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2); }
+  
+  /* Dark Mode Clock Fix */
+  input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(var(--icon-invert)); cursor: pointer; }
+  body.dark-mode { --icon-invert: 1; }
+  body:not(.dark-mode) { --icon-invert: 0; }
+
+  /* --- TOGGLES --- */
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--toggle-bg); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--input-border); }
+  .toggle-label { margin: 0; font-size: 14px; font-weight: 500; color: var(--text-main); }
+  
+  .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+  .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+  input:checked + .slider { background-color: var(--primary); }
+  input:checked + .slider:before { transform: translateX(24px); }
+
+  /* --- BUTTONS --- */
+  button { width: 100%; padding: 15px; background: #333; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; transition: transform 0.1s, background 0.3s; }
+  button.login-btn { background: var(--primary-dark); }
+  .edit-btn { background: none; color: #2196F3; border: none; padding: 0; font-size: 12px; cursor: pointer; width: auto; font-weight: 600; margin-left: 10px;}
+
+  /* --- HEADER & THEME --- */
+  .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  .theme-btn { background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; width: auto; margin: 0; }
+
+  /* --- MODAL --- */
+  .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(3px); z-index: 1000; }
+  .modal-content { background: var(--container-bg); padding: 25px; width: 90%; max-width: 400px; border-radius: 12px; height: 75vh; display: flex; flex-direction: column; color: var(--text-main); }
+  .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; overflow-y: auto; }
+  .chip { background: var(--toggle-bg); padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid var(--input-border); color: var(--text-main); }
+  
+  /* --- PREVIEW --- */
+  .preview-box { background: var(--input-bg); padding: 15px; border-radius: 8px; margin-top: 10px; font-size: 13px; white-space: pre-wrap; border-left: 4px solid #25D366; color: var(--text-main); line-height: 1.4; border: 1px solid var(--input-border); }
+  #status { text-align: center; margin-top: 15px; font-weight: bold; font-size: 13px; min-height: 20px; color: var(--text-label); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div class="top-bar">
+      <h3 id="mainHeader" style="margin:0; color:var(--primary-dark);">Sadhana Portal</h3>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeIcon">🌙</button>
+  </div>
+
+  <div id="loginSection">
+    <p style="color:var(--text-label); font-size:13px; margin-bottom:20px;">Hare Krishna! Please identify yourself.</p>
+    <label>Devotee Name</label>
+    <input type="text" id="loginName" placeholder="Enter exact name">
+    <button class="login-btn" onclick="performLogin()">Next</button>
+  </div>
+
+  <div id="formSection" class="hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span id="userNameDisplay" style="font-weight:bold; color:var(--text-main);"></span>
+        <span onclick="logout()" style="font-size:12px; text-decoration:underline; cursor:pointer; color:var(--text-label);">Logout</span>
+    </div>
+    
+    <label>Date</label>
+    <input type="date" id="dateInput" onchange="updatePreview()">
+
+    <div class="section-title">Schedule</div>
+    <div class="grid-2">
+        <div><label>To Bed</label><input type="time" id="tbInput" onchange="updatePreview()"></div>
+        <div><label>Wake Up</label><input type="time" id="wuInput" onchange="updatePreview()"></div>
+    </div>
+    <div class="grid-2">
+        <div><label>Day Rest (min)</label><input type="number" id="drInput" value="0" oninput="updatePreview()"></div>
+        <div><label>THRT (Time)</label><input type="time" id="thrtInput" onchange="updatePreview()"></div>
+    </div>
+    <label>Time Wasted (min)</label><input type="number" id="wastedInput" value="0" oninput="updatePreview()">
+
+    <div class="section-title">Sadhana</div>
+    <div class="grid-2">
+        <div><label>Japa Finish Time</label><input type="time" id="japaInput" onchange="updatePreview()"></div>
+        <div><label>Rounds</label><input type="number" id="roundsInput" placeholder="16" oninput="updatePreview()"></div>
+    </div>
+    <div class="grid-2">
+        <div><label>Reading (min)</label><input type="number" id="readInput" value="0" oninput="updatePreview()"></div>
+        <div><label>Hearing (min)</label><input type="number" id="hearInput" value="0" oninput="updatePreview()"></div>
+    </div>
+
+    <div id="studentFields" class="hidden">
+        <div class="section-title">Student Seva</div>
+        <div class="toggle-row">
+            <span class="toggle-label">Morning Class (MC)</span>
+            <label class="switch"><input type="checkbox" id="mcInput" onchange="updatePreview()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <span class="toggle-label">Mangala Arti (MA)</span>
+            <label class="switch"><input type="checkbox" id="maInput" onchange="updatePreview()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <span class="toggle-label">Personel Cleanliness</span>
+            <label class="switch"><input type="checkbox" id="roomCleanInput" onchange="updatePreview()"><span class="slider"></span></label>
+        </div>
+        <label>Studies (hr)</label><input type="number" id="studyInput" value="0" oninput="updatePreview()">
+    </div>
+
+    <div class="section-title">Cleanliness Seva</div>
+    <label>Seva Status</label>
+    <select id="cleanSevaInput" onchange="updatePreview()">
+        <option value="NA">Not Alloted</option>
+        <option value="Y">Done</option>
+        <option value="N">Pending</option>
+    </select>
+
+    <div class="section-title">Reflections</div>
+    <label>Reading Book</label>
+    <input type="text" id="booksInput" placeholder="e.g. Journey Home" oninput="updatePreview()">
+    <label>Reflections</label>
+    <textarea id="reflectionsInput" placeholder="1. ..." oninput="updatePreview()"></textarea>
+    
+    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Message Preview</span>
+        <button class="edit-btn" onclick="openEditor()">✎ Edit Format</button>
+    </div>
+    <div id="msgPreview" class="preview-box"></div>
+    
+    <label style="margin-top:20px;">Counselor WhatsApp</label>
+    <input type="tel" id="phoneInput" placeholder="+91...">
+
+    <button onclick="submitData()">Submit & WhatsApp</button>
+  </div>
+
+  <div id="loader" class="loader"></div>
+  <div id="status"></div>
+
+</div>
+
+<div id="editorModal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top:0;">Edit Format</h3>
+        <p style="font-size:12px; opacity:0.7; margin-bottom:10px;">Tap variables to add them.</p>
+        <div class="chip-container">
+            <div class="chip" onclick="insertVar('{date}')">Date</div>
+            <div class="chip" onclick="insertVar('{tb}')">Bed</div>
+            <div class="chip" onclick="insertVar('{wu}')">Wake</div>
+            <div class="chip" onclick="insertVar('{thrt}')">THRT</div>
+            <div class="chip" onclick="insertVar('{japa}')">Japa</div>
+            <div class="chip" onclick="insertVar('{rounds}')">Rounds</div>
+            <div class="chip" onclick="insertVar('{read}')">Read</div>
+            <div class="chip" onclick="insertVar('{hear}')">Hear</div>
+            <div class="chip" onclick="insertVar('{study}')">Study</div>
+            <div class="chip" onclick="insertVar('{wasted}')">Wasted</div>
+            <div class="chip" onclick="insertVar('{mc}')">MC</div>
+            <div class="chip" onclick="insertVar('{ma}')">MA</div>
+            <div class="chip" onclick="insertVar('{clean}')">Room</div>
+            <div class="chip" onclick="insertVar('{seva}')">Seva</div>
+        </div>
+        <textarea id="templateEditor" style="flex:1; font-family:monospace; margin-bottom:10px;"></textarea>
+        <div style="display:flex; gap:10px;">
+            <button onclick="saveTemplate()" style="background:#25D366; margin:0;">Save</button>
+            <button onclick="closeEditor()" style="background:#888; margin:0;">Cancel</button>
+        </div>
+        <div style="text-align:center; margin-top:10px;">
+            <span onclick="resetTemplate()" style="color:red; font-size:12px; cursor:pointer; text-decoration:underline;">Reset to Default</span>
+        </div>
+    </div>
+</div>
+
+<script>
+  
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9ZD_HaWNEy94hqBvILCEpHoV6VFCa0R8bpFOCEayYPxN7FIDDiV4F29AWpveBV6kv-g/exec'; 
+
+  // --- DEFAULT TEMPLATE ---
+  const DEFAULT_TEMPLATE = `PAMHO prabhu , 
+{date}
+
+to bed : {tb} 
+wake up : {wu} 
+day rest : {dr} min 
+THRT : {thrt}
+Chanting : {rounds} rounds {japa} 
+time wasted : {wasted} min
+Reading : {read} min
+Hearing : {hear} min
+Study : {study} min
+Books : - {books}  
+
+{reflections}
+
+YS `;
+
+  let currentUser = {};
+
+  // --- INIT ---
+  window.onload = function() {
+    document.getElementById('dateInput').valueAsDate = new Date();
+    
+    // Check Dark Mode
+    if(localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('themeIcon').innerText = "☀️";
+    }
+
+    // Auto Login
+    const savedUser = localStorage.getItem('sadhanaUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        loadForm(currentUser);
+    }
+    
+    // Restore Saved Fields
+    const savedPhone = localStorage.getItem('sadhanaPhone');
+    if(savedPhone) document.getElementById('phoneInput').value = savedPhone;
+
+    const savedRounds = localStorage.getItem('sadhanaRounds');
+    if(savedRounds) document.getElementById('roundsInput').value = savedRounds;
+
+    const savedBooks = localStorage.getItem('sadhanaBooks');
+    if(savedBooks) document.getElementById('booksInput').value = savedBooks;
+
+    updatePreview();
+  };
+
+  // --- DARK MODE ---
+  function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    document.getElementById('themeIcon').innerText = isDark ? "☀️" : "🌙";
+  }
+
+  // --- LOGIN ---
+  function performLogin() {
+    const name = document.getElementById('loginName').value.trim();
+    if(!name) return;
+
+    setStatus("Checking...", true);
+
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        redirect: "follow",
+        headers: {"Content-Type": "text/plain;charset=utf-8"},
+        body: JSON.stringify({ action: "login", name: name })
+    })
+    .then(res => res.json())
+    .then(data => {
+        setStatus("", false);
+        if(data.status === "success") {
+            currentUser = data.message || data; 
+            if(data.name) currentUser = data;
+            
+            localStorage.setItem('sadhanaUser', JSON.stringify(currentUser));
+            loadForm(currentUser);
+        } else {
+            setStatus("❌ " + data.message);
+        }
+    })
+    .catch(err => setStatus("❌ Login Error"));
+  }
+
+  function loadForm(user) {
+    document.getElementById('loginSection').classList.add('hidden');
+    document.getElementById('formSection').classList.remove('hidden');
+    document.getElementById('userNameDisplay').innerText = "Hare Krishna, " + user.name;
+    
+    if(user.type && user.type.toLowerCase().trim() === "student") {
+        document.getElementById('studentFields').classList.remove('hidden');
+    }
+    updatePreview();
+  }
+
+  function logout() {
+    if(confirm("Logout?")) {
+        localStorage.removeItem('sadhanaUser');
+        location.reload();
+    }
+  }
+
+  // --- HELPERS ---
+  function formatTime12(timeStr) {
+    if(!timeStr) return "--:--";
+    let [h, m] = timeStr.split(':');
+    let ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12;
+    h = h ? h : 12;
+    return `${h}.${m} ${ampm}`;
+  }
+  
+  function formatDate(dateStr) {
+    if(!dateStr) return "";
+    const d = new Date(dateStr);
+    return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+  }
+
+  function getTemplate() { return localStorage.getItem('msgTemplate') || DEFAULT_TEMPLATE; }
+
+  function updatePreview() {
+    const map = {
+        '{date}': formatDate(document.getElementById('dateInput').value),
+        '{tb}': formatTime12(document.getElementById('tbInput').value),
+        '{wu}': formatTime12(document.getElementById('wuInput').value),
+        '{thrt}': formatTime12(document.getElementById('thrtInput').value),
+        '{japa}': formatTime12(document.getElementById('japaInput').value),
+        
+        '{rounds}': document.getElementById('roundsInput').value || "0",
+        '{dr}': document.getElementById('drInput').value || "0",
+        '{wasted}': document.getElementById('wastedInput').value || "0",
+        '{read}': document.getElementById('readInput').value || "0",
+        '{hear}': document.getElementById('hearInput').value || "0",
+        '{study}': document.getElementById('studyInput').value || "0",
+        '{books}': document.getElementById('booksInput').value || "",
+        
+        '{mc}': document.getElementById('mcInput').checked ? "Yes" : "No",
+        '{ma}': document.getElementById('maInput').checked ? "Yes" : "No",
+        '{clean}': document.getElementById('roomCleanInput').checked ? "Yes" : "No",
+        '{seva}': document.getElementById('cleanSevaInput').value,
+        '{reflections}': document.getElementById('reflectionsInput').value || "",
+        '{name}': currentUser.name || "Yash"
+    };
+
+    let msg = getTemplate();
+    for (const key in map) {
+        msg = msg.split(key).join(map[key]);
+    }
+    document.getElementById('msgPreview').innerText = msg;
+    return msg;
+  }
+
+  // --- SUBMIT ---
+  function submitData() {
+    const phone = document.getElementById('phoneInput').value;
+    const rounds = document.getElementById('roundsInput').value;
+    const books = document.getElementById('booksInput').value;
+
+    if(!phone) return alert("Enter Phone");
+    
+    // Save to LocalStorage
+    localStorage.setItem('sadhanaPhone', phone);
+    localStorage.setItem('sadhanaRounds', rounds);
+    localStorage.setItem('sadhanaBooks', books);
+
+    setStatus("Uploading...", true);
+
+    const payload = {
+        action: "submit",
+        name: currentUser.name,
+        group: currentUser.group,
+        type: currentUser.type,
+        cleanRow: currentUser.cleanRow, 
+        date: document.getElementById('dateInput').value,
+        
+        tobed: document.getElementById('tbInput').value,
+        wakeup: document.getElementById('wuInput').value,
+        japa: document.getElementById('japaInput').value,
+        dayrest: document.getElementById('drInput').value,
+        reading: document.getElementById('readInput').value,
+        hearing: document.getElementById('hearInput').value,
+        
+        mc: document.getElementById('mcInput').checked,
+        ma: document.getElementById('maInput').checked,
+        cleanRoom: document.getElementById('roomCleanInput').checked,
+        studies: document.getElementById('studyInput').value,
+        cleanlinessSeva: document.getElementById('cleanSevaInput').value
+    };
+
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        redirect: "follow",
+        headers: {"Content-Type": "text/plain;charset=utf-8"},
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        setStatus("", false);
+        const color = data.status === "success" ? "green" : "red";
+        
+        const statusEl = document.getElementById('status');
+        statusEl.innerText = data.message;
+        statusEl.style.color = color;
+        
+        if(data.status === "success") {
+            const msg = updatePreview();
+            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            setTimeout(() => {
+                window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+            }, 800);
+        }
+    })
+    .catch(err => setStatus("Error: " + err));
+  }
+
+  function setStatus(msg, isLoading = false) {
+    const el = document.getElementById('status');
+    const loader = document.getElementById('loader');
+    
+    if(isLoading) {
+        loader.style.display = 'block';
+        el.innerText = msg;
+        el.style.color = 'var(--text-label)';
+    } else {
+        loader.style.display = 'none';
+        if(msg) {
+            el.innerText = msg;
+            el.style.color = 'red';
+        }
+    }
+  }
+
+  // --- EDITOR UTILS ---
+  function openEditor() { document.getElementById('editorModal').style.display = 'flex'; document.getElementById('templateEditor').value = getTemplate(); }
+  function closeEditor() { document.getElementById('editorModal').style.display = 'none'; }
+  function saveTemplate() { localStorage.setItem('msgTemplate', document.getElementById('templateEditor').value); closeEditor(); updatePreview(); }
+  function resetTemplate() { if(confirm("Reset to default format?")) { localStorage.removeItem('msgTemplate'); document.getElementById('templateEditor').value = DEFAULT_TEMPLATE; } }
+  function insertVar(v) { const el = document.getElementById('templateEditor'); const start = el.selectionStart; el.value = el.value.substring(0, start) + v + el.value.substring(el.selectionEnd); el.focus(); }
+</script>
+</body>
+</html>
