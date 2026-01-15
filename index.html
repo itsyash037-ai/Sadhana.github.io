@@ -189,11 +189,11 @@
     <label>Reflections</label>
     <textarea id="reflectionsInput" placeholder="1. ..." oninput="updatePreview()"></textarea>
     
-    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
-        <span>Message Preview</span>
-        <div>
-            <button class="copy-btn" id="copyBtn" onclick="copyPreview()">📋 Copy</button>
-            <button class="edit-btn" onclick="openEditor()">✎ Edit Format</button>
+    <div class="section-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap: nowrap;">
+        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Preview</span>
+        <div style="display:flex; gap:5px; flex-shrink: 0;">
+            <button class="copy-btn" id="copyBtn" onclick="copyPreview()" style="margin:0;">📋 Copy</button>
+            <button class="edit-btn" onclick="openEditor()" style="margin:0;">✎ Edit</button>
         </div>
     </div>
     <div id="msgPreview" class="preview-box"></div>
@@ -555,3 +555,4 @@ YS `;
 </script>
 </body>
 </html>
+
