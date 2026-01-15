@@ -17,6 +17,9 @@
     --primary-dark: #E65100;
     --toggle-bg: #f8f9fa;
     --shadow: rgba(0,0,0,0.1);
+    /* NEW BUTTON COLORS */
+    --btn-blue: #2196F3;
+    --btn-green: #4CAF50;
   }
 
   /* DARK MODE OVERRIDES */
@@ -31,6 +34,8 @@
     --primary-dark: #FFA726;
     --toggle-bg: #2d2d2d;
     --shadow: rgba(0,0,0,0.5);
+    --btn-blue: #1E88E5;
+    --btn-green: #43A047;
   }
 
   body { font-family: -apple-system, sans-serif; background: var(--bg-color); padding: 20px; display: flex; justify-content: center; transition: background 0.3s; }
@@ -81,9 +86,16 @@
   input:checked + .slider:before { transform: translateX(24px); }
 
   /* --- BUTTONS --- */
-  button { width: 100%; padding: 15px; background: #333; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; transition: transform 0.1s, background 0.3s; }
-  button.login-btn { background: var(--primary-dark); }
-  .edit-btn { background: none; color: #2196F3; border: none; padding: 0; font-size: 12px; cursor: pointer; width: auto; font-weight: 600; margin-left: 10px;}
+  button { width: 100%; padding: 15px; background: #333; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.1s, background 0.3s; }
+  
+  /* New Button Classes */
+  .btn-main { background: var(--primary-dark); margin-top: 15px; }
+  .btn-blue { background: var(--btn-blue); font-size: 14px; margin-top:0; }
+  .btn-green { background: var(--btn-green); font-size: 14px; margin-top:0; }
+  
+  /* Small Action Buttons */
+  .edit-btn { background: none; color: var(--btn-blue); border: 1px solid var(--btn-blue); padding: 5px 10px; font-size: 12px; width: auto; border-radius: 20px; margin-left: 5px; font-weight: 600;}
+  .copy-btn { background: none; color: var(--text-label); border: 1px solid var(--text-label); padding: 5px 10px; font-size: 12px; width: auto; border-radius: 20px; cursor: pointer; font-weight: 600; }
 
   /* --- HEADER & THEME --- */
   .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
@@ -105,17 +117,15 @@
 <div class="container">
   
   <div class="top-bar">
-      <h3 id="mainHeader" style="margin:0; color:var(--primary-dark);">Sadhana Portal Surabhikunj VOICE
-      </h3>
+      <h3 id="mainHeader" style="margin:0; color:var(--primary-dark);">Sadhana- Surabhikunj VOICE</h3>
       <button class="theme-btn" onclick="toggleTheme()" id="themeIcon">🌙</button>
-
   </div>
 
   <div id="loginSection">
     <p style="color:var(--text-label); font-size:13px; margin-bottom:20px;">Hare Krishna! Please identify yourself.</p>
-    <label>Devotee Name</label>
-    <input type="text" id="loginName" placeholder="Enter exact name">
-    <button class="login-btn" onclick="performLogin()">Next</button>
+    <label>Username</label>
+    <input type="text" id="loginName" placeholder="Enter Username">
+    <button class="btn-main" onclick="performLogin()">Next</button>
   </div>
 
   <div id="formSection" class="hidden">
@@ -140,7 +150,7 @@
 
     <div class="section-title">Sadhana</div>
     <div class="grid-2">
-        <div><label>Japa Finish Time</label><input type="time" id="japaInput" onchange="updatePreview()"></div>
+        <div><label>Japa completion Time</label><input type="time" id="japaInput" onchange="updatePreview()"></div>
         <div><label>Rounds</label><input type="number" id="roundsInput" placeholder="16" oninput="updatePreview()"></div>
     </div>
     <div class="grid-2">
@@ -162,7 +172,7 @@
             <span class="toggle-label">Personel Cleanliness</span>
             <label class="switch"><input type="checkbox" id="roomCleanInput" onchange="updatePreview()"><span class="slider"></span></label>
         </div>
-        <label>Studies (hr)</label><input type="number" id="studyInput" value="0" oninput="updatePreview()">
+        <label>Studies (hr)</label><input type="number" id="studyInput" placeholder="e.g. 2.5" oninput="updatePreview()">
     </div>
 
     <div class="section-title">Cleanliness Seva</div>
@@ -181,14 +191,24 @@
     
     <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
         <span>Message Preview</span>
-        <button class="edit-btn" onclick="openEditor()">✎ Edit Format</button>
+        <div>
+            <button class="copy-btn" id="copyBtn" onclick="copyPreview()">📋 Copy</button>
+            <button class="edit-btn" onclick="openEditor()">✎ Edit Format</button>
+        </div>
     </div>
     <div id="msgPreview" class="preview-box"></div>
     
     <label style="margin-top:20px;">Counselor WhatsApp</label>
     <input type="tel" id="phoneInput" placeholder="+91...">
 
-    <button onclick="submitData()">Submit & WhatsApp</button>
+    <button class="btn-main" onclick="submitAndWhatsapp()">Upload & WhatsApp</button>
+   
+    <!--<div class="grid-2" style="margin-top:20px;">
+        <button class="btn-blue" onclick="uploadOnly()">☁️ Upload Only</button>
+        <button class="btn-green" onclick="whatsappOnly()">💬 WhatsApp Only</button>
+    </div>-->
+
+    
   </div>
 
   <div id="loader" class="loader"></div>
@@ -228,7 +248,7 @@
 </div>
 
 <script>
-  
+  // ⚠️ ENSURE THIS URL IS CORRECT
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9ZD_HaWNEy94hqBvILCEpHoV6VFCa0R8bpFOCEayYPxN7FIDDiV4F29AWpveBV6kv-g/exec'; 
 
   // --- DEFAULT TEMPLATE ---
@@ -368,7 +388,9 @@ YS `;
         '{wasted}': document.getElementById('wastedInput').value || "0",
         '{read}': document.getElementById('readInput').value || "0",
         '{hear}': document.getElementById('hearInput').value || "0",
+    
         '{study}': document.getElementById('studyInput').value || "0",
+
         '{books}': document.getElementById('booksInput').value || "",
         
         '{mc}': document.getElementById('mcInput').checked ? "Yes" : "No",
@@ -376,7 +398,7 @@ YS `;
         '{clean}': document.getElementById('roomCleanInput').checked ? "Yes" : "No",
         '{seva}': document.getElementById('cleanSevaInput').value,
         '{reflections}': document.getElementById('reflectionsInput').value || "",
-        '{name}': currentUser.name || "Yash"
+        '{name}': currentUser.name || "Username"
     };
 
     let msg = getTemplate();
@@ -387,18 +409,46 @@ YS `;
     return msg;
   }
 
-  // --- SUBMIT ---
-  function submitData() {
-    const phone = document.getElementById('phoneInput').value;
-    const rounds = document.getElementById('roundsInput').value;
-    const books = document.getElementById('booksInput').value;
+  // --- ACTIONS (Split) ---
+  
+  function uploadOnly() {
+    uploadData().then(success => {
+       if(success) setStatus("✅ Saved to Sheets!", false);
+    });
+  }
 
+  function whatsappOnly() {
+    const phone = document.getElementById('phoneInput').value;
     if(!phone) return alert("Enter Phone");
+    openWhatsApp(phone);
+  }
+
+  function submitAndWhatsapp() {
+    uploadData().then(success => {
+       if(success) {
+           const phone = document.getElementById('phoneInput').value;
+           openWhatsApp(phone);
+       }
+    });
+  }
+
+  // --- CORE LOGIC ---
+
+  function uploadData() {
+    const phone = document.getElementById('phoneInput').value;
     
     // Save to LocalStorage
-    localStorage.setItem('sadhanaPhone', phone);
-    localStorage.setItem('sadhanaRounds', rounds);
-    localStorage.setItem('sadhanaBooks', books);
+    if(phone) localStorage.setItem('sadhanaPhone', phone);
+    localStorage.setItem('sadhanaRounds', document.getElementById('roundsInput').value);
+    localStorage.setItem('sadhanaBooks', document.getElementById('booksInput').value);
+
+    // Convert Study Time (HH:MM) to Minutes for Backend
+    let studyMins = 0;
+    const studyTime = document.getElementById('studyInput').value;
+    if(studyTime) {
+        const [sh, sm] = studyTime.split(':').map(Number);
+        studyMins = (sh * 60) + sm;
+    }
 
     setStatus("Uploading...", true);
 
@@ -420,11 +470,13 @@ YS `;
         mc: document.getElementById('mcInput').checked,
         ma: document.getElementById('maInput').checked,
         cleanRoom: document.getElementById('roomCleanInput').checked,
-        studies: document.getElementById('studyInput').value,
+        
+        studies: document.getElementById('studyInput').value, 
+        
         cleanlinessSeva: document.getElementById('cleanSevaInput').value
     };
 
-    fetch(SCRIPT_URL, {
+    return fetch(SCRIPT_URL, {
         method: 'POST',
         redirect: "follow",
         headers: {"Content-Type": "text/plain;charset=utf-8"},
@@ -438,16 +490,37 @@ YS `;
         const statusEl = document.getElementById('status');
         statusEl.innerText = data.message;
         statusEl.style.color = color;
-        
-        if(data.status === "success") {
-            const msg = updatePreview();
-            const cleanPhone = phone.replace(/[^0-9]/g, '');
-            setTimeout(() => {
-                window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-            }, 800);
-        }
+        return data.status === "success";
     })
-    .catch(err => setStatus("Error: " + err));
+    .catch(err => {
+        setStatus("Error: " + err);
+        return false;
+    });
+  }
+
+  function openWhatsApp(phone) {
+    if(!phone) return;
+    const msg = updatePreview();
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    setTimeout(() => {
+        window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_top');
+    }, 500);
+  }
+
+  function copyPreview() {
+    const text = document.getElementById('msgPreview').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const originalText = btn.innerText;
+        btn.innerText = "✓ Copied";
+        btn.style.borderColor = "var(--btn-green)";
+        btn.style.color = "var(--btn-green)";
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.borderColor = "var(--text-label)";
+            btn.style.color = "var(--text-label)";
+        }, 2000);
+    });
   }
 
   function setStatus(msg, isLoading = false) {
@@ -462,7 +535,13 @@ YS `;
         loader.style.display = 'none';
         if(msg) {
             el.innerText = msg;
-            el.style.color = 'red';
+            
+            // FIX: Check if message is a success message
+            if (msg.startsWith("✅") || msg.toLowerCase().includes("success")) {
+                el.style.color = "green"; 
+            } else {
+                el.style.color = "red";
+            }
         }
     }
   }
@@ -475,11 +554,4 @@ YS `;
   function insertVar(v) { const el = document.getElementById('templateEditor'); const start = el.selectionStart; el.value = el.value.substring(0, start) + v + el.value.substring(el.selectionEnd); el.focus(); }
 </script>
 </body>
-
 </html>
-
-
-
-
-
-
