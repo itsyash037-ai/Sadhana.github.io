@@ -140,11 +140,11 @@
     <div class="section-title">Schedule</div>
     <div class="grid-2">
         <div><label>To Bed</label><input type="time" id="tbInput" onchange="updatePreview()"></div>
-        <div><label>Wake Up</label><input type="time" id="wuInput" onchange="updatePreview()" value="4:00"></div>
+        <div><label>Wake Up</label><input type="time" id="wuInput" onchange="updatePreview()"></div>
     </div>
     <div class="grid-2">
         <div><label>Day Rest (min)</label><input type="number" id="drInput" value="0" oninput="updatePreview()"></div>
-        <div><label>THRT (Time)</label><input type="time" id="thrtInput" onchange="updatePreview()" value="4:30"></div>
+        <div><label>THRT (Time)</label><input type="time" id="thrtInput" onchange="updatePreview()"></div>
     </div>
     <label>Time Wasted (min)</label><input type="number" id="wastedInput" value="0" oninput="updatePreview()">
 
@@ -279,11 +279,11 @@ YS `;
   window.onload = function() {
     document.getElementById('dateInput').valueAsDate = new Date();
     // Auto-set To Bed time to Current Time + 5 mins
-    const now = new Date();
+    /*const now = new Date();
     now.setMinutes(now.getMinutes() + 5);
     const hh = String(now.getHours()).padStart(2, '0');
     const mm = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('tbInput').value = `${hh}:${mm}`;
+    document.getElementById('tbInput').value = `${hh}:${mm}`;*/
     // Check Dark Mode
     if(localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
@@ -574,6 +574,7 @@ YS `;
 </script>
 </body>
 </html>
+
 
 
 
