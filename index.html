@@ -200,8 +200,11 @@
     
     <label style="margin-top:20px;">Counselor WhatsApp</label>
     <input type="tel" id="phoneInput" value="+91 7030934542">
-
-    <button class="btn-main" onclick="submitAndWhatsapp()">Upload & WhatsApp</button>
+    
+    <div class="grid-2" style="margin-top:15px;">
+        <button class="btn-main" onclick="submitAndWhatsapp()" style="margin-top:0;">Submit & Direct</button>
+        <button class="btn-green" onclick="submitAndShare()" style="margin-top:0; background:#128C7E;">Submit & Share</button>
+    </div>
    
     <!--<div class="grid-2" style="margin-top:20px;">
         <button class="btn-blue" onclick="uploadOnly()">☁️ Upload Only</button>
@@ -275,7 +278,12 @@ YS `;
   // --- INIT ---
   window.onload = function() {
     document.getElementById('dateInput').valueAsDate = new Date();
-    
+    // Auto-set To Bed time to Current Time + 5 mins
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 5);
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('tbInput').value = `${hh}:${mm}`;
     // Check Dark Mode
     if(localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
@@ -396,7 +404,7 @@ YS `;
         '{mc}': document.getElementById('mcInput').checked ? "Yes" : "No",
         '{ma}': document.getElementById('maInput').checked ? "Yes" : "No",
         '{clean}': document.getElementById('roomCleanInput').checked ? "Yes" : "No",
-        '{seva}': document.getElementById('cleanSevaInput').value,
+        //'{seva}': document.getElementById('cleanSevaInput').value,
         '{reflections}': document.getElementById('reflectionsInput').value || "",
         '{name}': currentUser.name || "Username"
     };
@@ -431,7 +439,18 @@ YS `;
        }
     });
   }
+  //Submit and shaer to multiple 
+ function submitAndShare() {
+    uploadData().then(success => {
+       if(success) openWhatsAppShare();
+    });
+  }
 
+  function openWhatsAppShare() {
+    const msg = updatePreview();
+    setTimeout(() => { window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_top'); }, 500);
+  }
+  
   // --- CORE LOGIC ---
 
   function uploadData() {
@@ -473,7 +492,7 @@ YS `;
         
         studies: document.getElementById('studyInput').value, 
         
-        cleanlinessSeva: document.getElementById('cleanSevaInput').value
+        //cleanlinessSeva: document.getElementById('cleanSevaInput').value
     };
 
     return fetch(SCRIPT_URL, {
@@ -555,6 +574,7 @@ YS `;
 </script>
 </body>
 </html>
+
 
 
 
