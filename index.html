@@ -140,11 +140,11 @@
     <div class="section-title">Schedule</div>
     <div class="grid-2">
         <div><label>To Bed</label><input type="time" id="tbInput" onchange="updatePreview()"></div>
-        <div><label>Wake Up</label><input type="time" id="wuInput" onchange="updatePreview()"></div>
+        <div><label>Wake Up</label><input type="time" id="wuInput" onchange="updatePreview()" value="4:00"></div>
     </div>
     <div class="grid-2">
         <div><label>Day Rest (min)</label><input type="number" id="drInput" value="0" oninput="updatePreview()"></div>
-        <div><label>THRT (Time)</label><input type="time" id="thrtInput" onchange="updatePreview()"></div>
+        <div><label>THRT (Time)</label><input type="time" id="thrtInput" onchange="updatePreview()" value="4:30"></div>
     </div>
     <label>Time Wasted (min)</label><input type="number" id="wastedInput" value="0" oninput="updatePreview()">
 
@@ -174,14 +174,14 @@
         </div>
         <label>Studies (hr)</label><input type="number" id="studyInput" placeholder="e.g. 2.5" oninput="updatePreview()">
     </div>
-
-    <div class="section-title">Cleanliness Seva</div>
+    
+    <!--<div class="section-title">Cleanliness Seva</div>
     <label>Seva Status</label>
     <select id="cleanSevaInput" onchange="updatePreview()">
         <option value="NA">Not Alloted</option>
         <option value="Y">Done</option>
         <option value="N">Pending</option>
-    </select>
+    </select>-->
 
     <div class="section-title">Reflections</div>
     <label>Reading Book</label>
@@ -202,8 +202,8 @@
     <input type="tel" id="phoneInput" value="+91 7030934542">
     
     <div class="grid-2" style="margin-top:15px;">
-        <button class="btn-main" onclick="submitAndWhatsapp()" style="margin-top:0;">Submit & Direct</button>
-        <button class="btn-green" onclick="submitAndShare()" style="margin-top:0; background:#128C7E;">Submit & Share</button>
+        <button class="btn-main" onclick="submitAndWhatsapp()" style="margin-top:0;" title="Saves data to sheet and opens WhatsApp with your counselor.">Share with counselor</button>
+        <button class="btn-green" onclick="submitAndShare()" style="margin-top:0; background:#128C7E;" title="Saves data to sheet and lets you select the contact in WhatsApp.">Share with multiple</button>
     </div>
    
     <!--<div class="grid-2" style="margin-top:20px;">
@@ -574,6 +574,7 @@ YS `;
 </script>
 </body>
 </html>
+
 
 
 
