@@ -139,23 +139,23 @@
 
     <div class="section-title">Schedule</div>
     <div class="grid-2">
-        <div><label>To Bed</label><input type="time" id="tbInput" onchange="updatePreview()"></div>
-        <div><label>Wake Up</label><input type="time" id="wuInput" onchange="updatePreview()"></div>
+        <div><label>To Bed</label><input type="time" id="tbInput" onchange="updatePreview()" required></div>
+        <div><label>Wake Up</label><input type="time" id="wuInput" onchange="updatePreview()" required></div>
     </div>
     <div class="grid-2">
-        <div><label>Day Rest (min)</label><input type="number" id="drInput" value="0" oninput="updatePreview()"></div>
+        <div><label>Day Rest (min)</label><input type="number" id="drInput" value="0" oninput="updatePreview()" required></div>
         <div><label>THRT (Time)</label><input type="time" id="thrtInput" onchange="updatePreview()"></div>
     </div>
     <label>Time Wasted (min)</label><input type="number" id="wastedInput" value="0" oninput="updatePreview()">
 
     <div class="section-title">Sadhana</div>
     <div class="grid-2">
-        <div><label>Japa completion Time</label><input type="time" id="japaInput" onchange="updatePreview()"></div>
+        <div><label>Japa completion Time</label><input type="time" id="japaInput" onchange="updatePreview()" required></div>
         <div><label>Rounds</label><input type="number" id="roundsInput" placeholder="16" oninput="updatePreview()"></div>
     </div>
     <div class="grid-2">
-        <div><label>Reading (min)</label><input type="number" id="readInput" value="0" oninput="updatePreview()"></div>
-        <div><label>Hearing (min)</label><input type="number" id="hearInput" value="0" oninput="updatePreview()"></div>
+        <div><label>Reading (min)</label><input type="number" id="readInput" value="0" oninput="updatePreview()" required></div>
+        <div><label>Hearing (min)</label><input type="number" id="hearInput" value="0" oninput="updatePreview()" required></div>
     </div>
 
     <div id="studentFields" class="hidden">
@@ -172,7 +172,7 @@
             <span class="toggle-label">Personal Cleanliness</span>
             <label class="switch"><input type="checkbox" id="roomCleanInput" onchange="updatePreview()" checked><span class="slider"></span></label>
         </div>
-        <label>Studies (hr)</label><input type="number" id="studyInput" placeholder="e.g. 2.5" oninput="updatePreview()">
+        <label>Studies (hr)</label><input type="number" id="studyInput" placeholder="e.g. 2.5" oninput="updatePreview()" required>
     </div>
     
     <!--<div class="section-title">Cleanliness Seva</div>
