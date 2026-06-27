@@ -175,13 +175,13 @@
         <label>Studies (hr)</label><input type="number" id="studyInput" placeholder="e.g. 2.5" oninput="updatePreview()" required>
     </div>
     
-    <!--<div class="section-title">Cleanliness Seva</div>
-    <label>Seva Status</label>
+    <div class="section-title">Cleanliness Seva</div>
+    <label>Cleanliness service Status</label>
     <select id="cleanSevaInput" onchange="updatePreview()">
         <option value="NA">Not Alloted</option>
         <option value="Y">Done</option>
         <option value="N">Pending</option>
-    </select>-->
+    </select>
 
     <div class="section-title">Reflections</div>
     <label>Reading Book</label>
@@ -253,7 +253,7 @@
 
 <script>
   // ⚠️ ENSURE THIS URL IS CORRECT
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypewqpy4bH7AlOXXwLYZpJC6wXvRMk_f4MVt6r-gJWBqvMEf88gWihqUtCPgvAMGwfkQ/exec'; 
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2vvxAmnbjwmqMu40w66DkBbnPim1O4g0Fk3T7gedfjyvVffZeFVBSht_1AWYouCZP/exec'; 
 
   // --- DEFAULT TEMPLATE ---
   const DEFAULT_TEMPLATE = `PAMHO prabhu , 
@@ -493,7 +493,7 @@ YS `;
         
         studies: document.getElementById('studyInput').value, 
         
-        //cleanlinessSeva: document.getElementById('cleanSevaInput').value
+        cleanlinessSeva: document.getElementById('cleanSevaInput').value
     };
 
     return fetch(SCRIPT_URL, {
